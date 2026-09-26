@@ -77,144 +77,161 @@ Learn about the LLM, RAG, MCP, Agent, Fine-tuning & Quantization: [AI Engineerin
 ### LLM Fundamentals
 
 - What are foundation models, and how have they changed AI engineering?
-  - Answer: Explained in this video: [AI Engineering Explained: LLM, RAG, MCP, Agent, Fine-Tuning, Quantization](https://www.youtube.com/watch?v=lnfWvX66FUk)
+  - Answer: Foundation models are large models trained on broad, general-purpose datasets so they can be adapted to many downstream tasks. They changed AI engineering by shifting teams from training task-specific models from scratch to prompting, fine-tuning, evaluating, and deploying reusable base models. This made AI product development faster, but also introduced new engineering concerns such as latency, cost, safety, retrieval, evaluation, and model governance.
 - What is a Large Language Model (LLM), and how does it work?
-  - Answer: Explained in this video: [AI Engineering Explained: LLM, RAG, MCP, Agent, Fine-Tuning, Quantization](https://www.youtube.com/watch?v=lnfWvX66FUk)
+  - Answer: An LLM is a neural network trained to understand and generate text by predicting tokens from context. Most modern LLMs use Transformer architectures: text is split into tokens, tokens are converted into embeddings, attention layers mix information across the context, and the model outputs probabilities for the next token. Repeating next-token prediction generates full responses.
 - Inside ChatGPT: What Happens After You Hit Enter?
-  - Answer: [Inside ChatGPT: What Happens After You Hit Enter](https://outcomeschool.substack.com/p/inside-chatgpt-what-happens-after)
+  - Answer: After you submit a message, the system combines your input with conversation history, system/developer instructions, tool context, and safety policies. The text is tokenized and passed through the model, which computes next-token probabilities. Decoding settings choose tokens step by step until a stop condition is reached. The final response may also involve tool calls, retrieval, moderation, formatting, and logging depending on the product.
 - What is the Transformer architecture and how does it work?
-  - Answer: [Decoding Transformer Architecture](https://outcomeschool.com/blog/decoding-transformer-architecture)
+  - Answer: The Transformer is a neural architecture built around attention instead of recurrence. It represents tokens as embeddings, adds position information, and repeatedly applies attention, feed-forward layers, normalization, and residual connections. Attention lets each token weight other relevant tokens in the context, making Transformers highly parallelizable and effective for long-range language patterns.
 - What are the key components of the Transformer architecture?
-  - Answer: [Decoding Transformer Architecture](https://outcomeschool.com/blog/decoding-transformer-architecture)
+  - Answer: Key components include token embeddings, positional encodings or positional embeddings, attention layers, multi-head attention, feed-forward networks, residual connections, layer normalization, and an output projection to vocabulary logits. Encoder-decoder Transformers also include cross-attention between decoder tokens and encoder outputs.
 - Walk me through what happens, step by step, in one forward pass of a decoder-only Transformer.
-  - Answer: [Decoding Transformer Architecture](https://outcomeschool.com/blog/decoding-transformer-architecture)
+  - Answer: The input text is tokenized and converted to token embeddings. Position information is added, then each Transformer block applies masked self-attention so each token can attend only to allowed previous tokens. The result passes through residual connections, normalization, and a feed-forward network. After the final block, the model projects hidden states to vocabulary logits, and the last position's logits are used to choose the next token.
 - What is tokenization in LLMs?
-  - Answer: [Tokenization in Large Language Models (LLMs)](https://www.youtube.com/watch?v=sK2s9I84EVI)
+  - Answer: Tokenization is the process of converting text into smaller units, called tokens, that the model can process. Tokens may be words, subwords, characters, punctuation, or byte-level chunks. The tokenizer maps each token to an integer ID, which is then converted into an embedding. Tokenization affects cost, context usage, multilingual quality, and how well domain-specific terms are represented.
 - Explain BPE (Byte Pair Encoding).
-  - Answer: [Byte Pair Encoding](https://outcomeschool.com/blog/bpe-in-llms)
+  - Answer: Byte Pair Encoding is a subword tokenization method that starts with small units, often bytes or characters, and repeatedly merges the most frequent adjacent pairs into larger tokens. This creates a vocabulary that can represent common words efficiently while still handling rare or unseen words by splitting them into smaller pieces.
 - Explain WordPiece and SentencePiece.
+  - Answer: WordPiece is a subword tokenizer that builds tokens by selecting pieces that improve the likelihood of the training corpus, commonly using continuation markers for subword fragments. SentencePiece is a tokenizer framework that treats text as a raw character stream and can train BPE or unigram models without relying on pre-tokenized whitespace. Both help models handle rare words, misspellings, and multilingual text with a fixed vocabulary.
 - What is positional encoding, and why is it needed in Transformers?
-  - Answer: [Positional Embeddings in LLMs](https://outcomeschool.substack.com/p/positional-embeddings-in-llms)
+  - Answer: Positional encoding gives the model information about token order. Self-attention alone is permutation-invariant, so without position information the model would not know whether one token came before or after another. Positional methods can be fixed, learned, relative, or rotary, and they help the model understand sequence structure.
 - What are embeddings?
-  - Answer: [Embeddings in Machine Learning](https://www.youtube.com/watch?v=LedXW6xl21s)
+  - Answer: Embeddings are dense numeric vectors that represent tokens, words, documents, images, or other objects in a continuous space. Similar items tend to have nearby vectors, allowing models to capture semantic relationships. In LLMs, token embeddings are the model's input representation, while embedding models are often used for search, clustering, classification, and RAG.
 - Explain the Query(Q), Key(K), and Value(V) in attention.
-  - Answer: [Math behind Attention - Q, K, and V](https://outcomeschool.com/blog/math-behind-attention-qkv)
+  - Answer: Queries, keys, and values are learned projections of token representations. A query represents what a token is looking for, keys represent what each token offers for matching, and values contain the information to retrieve. Attention scores are computed by comparing queries with keys, then those scores weight the values to produce a context-aware representation.
 - What is self-attention, and how does it work in Transformers?
-  - Answer: [Self Attention in Transformers](https://outcomeschool.com/blog/self-attention-in-transformers)
+  - Answer: Self-attention lets tokens in the same sequence exchange information. Each token produces Q, K, and V vectors; the model compares each query with all keys, applies a softmax to get attention weights, and uses those weights to combine values. In decoder-only LLMs, causal masking prevents a token from attending to future tokens during generation.
 - What is Cross Attention in Transformers?
-  - Answer: [Cross Attention in Transformers](https://outcomeschool.com/blog/cross-attention-in-transformers)
+  - Answer: Cross-attention is attention between two different sources of representations. In an encoder-decoder Transformer, decoder queries attend to encoder keys and values, allowing the decoder to generate output conditioned on the encoded input. It is useful in translation, summarization, multimodal models, and systems where one stream needs to condition on another.
 - Why do we scale the dot product attention by √dₖ in the Transformer architecture?
-  - Answer: [Math behind √dₖ Scaling Factor in Attention](https://outcomeschool.com/blog/scaling-dot-product-attention)
+  - Answer: Dot products grow larger as the key/query dimension increases. Large attention scores can push softmax into very sharp distributions, causing small gradients and unstable training. Dividing by √dₖ keeps the score variance in a healthier range, making attention easier to optimize.
 - What is causal masking?
-  - Answer: [Causal Masking in Attention](https://outcomeschool.com/blog/causal-masking-in-attention)
+  - Answer: Causal masking prevents a token from attending to future tokens. In next-token prediction, the model should only use previous and current context, not information from later positions. The mask sets future attention scores to negative infinity before softmax, ensuring generation remains autoregressive.
 - What are multi-head attention mechanisms? Why use multiple attention heads?
-  - Answer: [Multi-Head Attention in Transformers](https://outcomeschool.com/blog/multi-head-attention-in-transformers)
+  - Answer: Multi-head attention runs several attention operations in parallel, each with separate learned projections. Different heads can specialize in different relationships, such as syntax, coreference, local patterns, or long-range dependencies. Their outputs are concatenated and projected, giving the model a richer representation than a single attention head.
 - What are Feed-Forward Networks in LLMs?
-  - Answer: [Feed-Forward Networks in LLMs](https://outcomeschool.com/blog/feed-forward-networks-in-llms)
+  - Answer: Feed-forward networks are the per-token MLP layers inside Transformer blocks. After attention mixes information across tokens, the feed-forward network transforms each token representation independently, usually by expanding the hidden dimension, applying a nonlinearity, and projecting back down. They provide much of the model's capacity for storing and transforming learned patterns.
 - What is Generative AI?
-  - Answer: [What is Generative AI?](https://outcomeschool.com/blog/what-is-generative-ai)
+  - Answer: Generative AI refers to AI systems that create new content such as text, code, images, audio, video, or structured data. Instead of only classifying or ranking existing inputs, generative models learn patterns from training data and produce novel outputs conditioned on prompts, examples, or other context.
 - What is the context window in LLMs, and why does it matter?
-  - Answer: [Context Window in LLMs](https://www.linkedin.com/posts/amit-shekhar-iitbhu_the-context-window-is-the-llms-working-memory-activity-7437754426175672320-MH9c)
+  - Answer: The context window is the maximum number of tokens the model can consider at once, including the prompt, conversation history, retrieved documents, tool outputs, and generated response. It matters because information outside the window is unavailable to the model. Larger context windows support longer documents and conversations, but they increase cost, latency, and memory usage.
 - Why is the context window limited in LLMs?
-  - Answer: [Why is the context window limited in LLMs?](https://www.youtube.com/watch?v=CGIhxIaOg3M&lc)
+  - Answer: The context window is limited because attention and KV-cache memory grow with sequence length. Standard self-attention has quadratic compute with respect to tokens, and inference must store key/value tensors for every generated and input token. Longer windows also make retrieval quality, latency, cost, and training stability harder, so model providers choose a practical limit based on architecture and serving constraints.
 - What is temperature in the context of LLMs, and how does it affect output?
-  - Answer: [How does Temperature control LLM output?](https://outcomeschool.com/blog/how-does-temperature-control-llm-output)
+  - Answer: Temperature controls how sharply or broadly the model samples from the next-token probability distribution. Lower temperature makes outputs more deterministic and conservative by favoring high-probability tokens. Higher temperature increases randomness and diversity, but can also increase hallucinations, inconsistency, and formatting errors.
 - Why is the first token slower than the rest in an LLM?
-  - Answer: [The First-Token Latency Problem in LLMs](https://www.youtube.com/watch?v=XD8DD4cEHu0)
+  - Answer: The first token is slower because the model must process the entire input prompt before it can generate anything. This prefill phase computes attention over all prompt tokens and builds the KV cache. After that, decoding usually processes one new token at a time while reusing the cache, so later tokens are faster per token.
 - Explain Top-p (nucleus) sampling and Top-k sampling. How do they differ?
-  - Answer: [How do Top-k and Top-p Sampling work?](https://outcomeschool.com/blog/how-do-top-k-and-top-p-sampling-work) 
+  - Answer: Top-k sampling restricts generation to the k most likely next tokens, then samples from that fixed-size set. Top-p sampling chooses the smallest set of tokens whose cumulative probability exceeds p, then samples from that dynamic set. Top-k is simple and predictable, while top-p adapts to the confidence of the distribution.
 - Compare greedy decoding, beam search, top-k, top-p, and temperature sampling. When does each fail?
-  - Answer: [How do Top-k and Top-p Sampling work?](https://outcomeschool.com/blog/how-do-top-k-and-top-p-sampling-work) 
+  - Answer: Greedy decoding always picks the highest-probability token; it is fast but can be repetitive or myopic. Beam search keeps multiple high-probability candidates; it helps structured tasks but can produce bland or over-optimized text. Top-k and top-p add controlled randomness; they can fail when too restrictive or too loose. Temperature sampling adjusts randomness globally; very low values become rigid, while high values can drift or hallucinate.
 - What are logits, and how are they used in text generation?
-  - Answer: [Understanding Logits in Machine Learning](https://x.com/amitiitbhu/status/1927927814923207146)
+  - Answer: Logits are the raw, unnormalized scores the model produces for each token in the vocabulary. They are converted into probabilities with softmax, often after adjustments such as temperature scaling, top-k/top-p filtering, repetition penalties, or logit bias. The decoding algorithm then selects or samples the next token from that distribution.
 - What are skip connections (residual connections) in Transformers?
-  - Answer: [Skip connections (residual connections) in Transformers](https://www.linkedin.com/posts/amit-shekhar-iitbhu_machinelearning-llm-deeplearning-share-7414239846707392512-pQdQ)
+  - Answer: Skip connections add a layer's input back to its output, usually around attention and feed-forward sublayers. They help gradients flow through deep networks, reduce optimization difficulty, and allow layers to learn refinements instead of completely new representations. This is essential for training very deep Transformer models reliably.
 - What is the difference between open-source and closed-source LLMs? When would you choose one over the other?
+  - Answer: Open-source or open-weight LLMs provide model weights, code, or enough artifacts to run and customize the model yourself. Closed-source LLMs are accessed through hosted APIs and usually hide weights and training details. Choose open models for control, privacy, customization, offline deployment, or cost predictability at scale. Choose closed models for fast integration, strong managed performance, lower operations burden, and vendor-supported reliability.
 - What is the difference between encoder-only, decoder-only, and encoder-decoder Transformer architectures?
-  - Answer: [Encoder vs Decoder in Transformers](https://outcomeschool.com/blog/encoder-vs-decoder-in-transformers)
+  - Answer: Encoder-only models read the full input bidirectionally and are strong for understanding tasks such as classification, retrieval, and token labeling. Decoder-only models generate autoregressively using causal masking and are the dominant architecture for chat and text generation. Encoder-decoder models encode an input sequence and decode an output sequence, making them useful for translation, summarization, and sequence-to-sequence tasks.
 - What is KV cache, and how does it speed up inference?
-  - Answer: [What is KV Cache in LLMs?](https://outcomeschool.com/blog/kv-cache-in-llms)
+  - Answer: The KV cache stores the key and value tensors computed for previous tokens during autoregressive generation. Without it, the model would recompute attention states for the entire prefix at every new token. With the cache, each decoding step computes only the new token's projections and attends to stored keys and values, greatly reducing repeated work.
 - Estimate the KV cache memory needed to serve a large model. How does it constrain batch size and context length?
-  - Answer: [KV Cache Compression](https://outcomeschool.com/blog/kv-cache-compression)
+  - Answer: A rough KV-cache estimate is batch_size * sequence_length * layers * 2 * kv_heads * head_dim * bytes_per_value. The factor of 2 is for keys and values. Memory grows linearly with batch size and context length, so longer prompts or more concurrent users reduce how many requests fit on a GPU. Models using MQA or GQA reduce kv_heads and therefore reduce cache memory.
 - KV Cache Compression
-  - Answer: [KV Cache Compression](https://outcomeschool.com/blog/kv-cache-compression)
+  - Answer: KV cache compression reduces the memory required to store past keys and values during long-context inference. Common approaches include quantizing the cache, evicting less useful tokens, using sliding or paged attention, sharing KV heads with MQA/GQA, or compressing old context into smaller representations. The tradeoff is usually memory and throughput versus attention fidelity.
 - What is model distillation, and how is it used with LLMs?
-  - Answer: [How does Knowledge Distillation work?](https://outcomeschool.com/blog/how-does-knowledge-distillation-work)
+  - Answer: Model distillation trains a smaller student model to imitate a larger teacher model. For LLMs, the teacher may generate answers, rationales, preference data, or soft probability targets that the student learns from. Distillation is used to reduce latency, cost, and deployment size while preserving as much task quality as possible.
 - What is Mixture of Experts (MoE), and how does it work in models like Mixtral?
-  - Answer: [Mixture of Experts Explained](https://outcomeschool.com/blog/mixture-of-experts)
+  - Answer: Mixture of Experts models contain multiple expert feed-forward networks and a router that selects a small subset of experts for each token. This gives the model a large total parameter count while activating only part of it per token. In models like Mixtral, sparse expert routing improves capacity and efficiency, but adds complexity around routing balance, serving, and communication.
 - What is the difference between dense and sparse models?
-  - Answer: [Mixture of Experts Explained](https://outcomeschool.com/blog/mixture-of-experts)
+  - Answer: In a dense model, most or all parameters in each layer are used for every token. In a sparse model, only a subset of parameters is activated for a given token, as in MoE routing. Dense models are simpler to train and serve, while sparse models can offer more capacity per unit of compute if routing and infrastructure are handled well.
 - How does DeepSeek-V4 work?
-  - Answer: [DeepSeek-V4 Architecture Explained](https://outcomeschool.com/blog/decoding-deepseek-v4)
+  - Answer: DeepSeek-V4 is a Mixture-of-Experts model family that keeps the DeepSeekMoE and multi-token prediction ideas from earlier DeepSeek models while adding long-context efficiency improvements. Its architecture uses hybrid attention with compressed sparse attention and heavily compressed attention to reduce KV-cache and long-context costs. It also uses architectural and training changes such as manifold-constrained hyper-connections and the Muon optimizer to improve stability and efficiency.
 - What is Flash Attention?
-  - Answer: [Decoding Flash Attention in LLMs](https://outcomeschool.com/blog/decoding-flash-attention)
+  - Answer: Flash Attention is an optimized exact attention algorithm that reduces memory traffic by tiling attention computation and avoiding materializing the full attention matrix in GPU memory. It computes attention in blocks using fast on-chip memory, making training and inference faster and more memory efficient while preserving the same attention result up to numerical precision.
 - What is Cross-Entropy Loss?
-  - Answer: [Math Behind Cross-Entropy Loss](https://outcomeschool.com/blog/math-behind-cross-entropy-loss)
+  - Answer: Cross-entropy loss measures the difference between the model's predicted probability distribution and the true target distribution. In language modeling, the target is usually the correct next token, and the loss is lower when the model assigns that token high probability. Minimizing cross-entropy is equivalent to maximizing the likelihood of the training text.
 - What is Grouped-Query Attention (GQA), and how does it differ from Multi-Head Attention (MHA)?
-  - Answer: [Grouped Query Attention](https://outcomeschool.com/blog/grouped-query-attention)
+  - Answer: In standard multi-head attention, each query head has its own key and value heads. Grouped-Query Attention keeps many query heads but shares fewer key/value heads across groups of queries. This reduces KV-cache memory and decoding bandwidth while preserving more quality than using a single shared KV head as in Multi-Query Attention.
 - How does Sliding Window Attention work?
-  - Answer: [How does Sliding Window Attention work?](https://outcomeschool.com/blog/how-does-sliding-window-attention-work)
+  - Answer: Sliding Window Attention restricts each token to attend only to a fixed-size window of nearby tokens instead of the entire sequence. This lowers attention cost from quadratic over the full context to roughly linear in sequence length for a fixed window. It works well for local dependencies, but models may need special mechanisms such as global tokens, memory, retrieval, or attention sinks to preserve long-range information.
 - How do Attention Sinks work?
-  - Answer: [How do Attention Sinks work?](https://outcomeschool.com/blog/how-do-attention-sinks-work)
+  - Answer: Attention sinks are tokens, often early tokens in the sequence, that many later tokens attend to disproportionately. They help stabilize attention distributions during long-context generation because attention needs somewhere to place probability mass even when local tokens are not useful. Some long-context methods preserve these sink tokens while sliding or truncating the rest of the cache to maintain quality.
 - How does Rotary Position Embedding (RoPE) work, and why is it preferred over learned positional embeddings?
-  - Answer: [Math Behind RoPE (Rotary Position Embedding)](https://outcomeschool.com/blog/math-behind-rope-rotary-position-embedding)
+  - Answer: RoPE encodes position by rotating query and key vectors by position-dependent angles before attention. This makes relative distance between tokens naturally affect their dot products. It is preferred in many LLMs because it generalizes better to longer contexts than simple learned absolute position embeddings and works efficiently with autoregressive attention.
 - Explain Layer Normalization
-  - Answer: [Batch Normalization vs Layer Normalization](https://outcomeschool.com/blog/batch-normalization-vs-layer-normalization)
+  - Answer: Layer Normalization normalizes the activations within each token representation across the hidden dimension. It subtracts the mean, divides by the standard deviation, and then applies learned scale and shift parameters. In Transformers, it stabilizes training, improves gradient flow, and reduces sensitivity to activation scale.
 - Explain RMSNorm (Root Mean Square Layer Normalization)
-  - Answer: [RMSNorm (Root Mean Square Layer Normalization)](https://outcomeschool.com/blog/rmsnorm-root-mean-square-layer-normalization)
+  - Answer: RMSNorm is a simpler normalization method that scales activations by their root mean square without subtracting the mean. It keeps the learned scale parameter but removes part of LayerNorm's computation. Many modern LLMs use RMSNorm because it is faster, stable, and often performs similarly to or better than full LayerNorm.
 - Why do modern Transformers use Pre-LayerNorm (Pre-Norm) instead of Post-LayerNorm?
-  - Answer: [RMSNorm (Root Mean Square Layer Normalization)](https://outcomeschool.com/blog/rmsnorm-root-mean-square-layer-normalization)
+  - Answer: Pre-Norm applies normalization before the attention or feed-forward sublayer, while Post-Norm applies it after the residual addition. Pre-Norm improves gradient flow through deep networks and makes large Transformers easier to train. Post-Norm can produce strong results but is more prone to instability as depth increases.
 - What are scaling laws (Chinchilla), and how do they guide model size vs training data decisions?
+  - Answer: Scaling laws describe how model performance changes with parameters, data, and compute. The Chinchilla result showed that many earlier LLMs were over-sized and under-trained for their compute budget, and that optimal training often uses more tokens with a smaller model. In practice, scaling laws help decide how to allocate compute between model size, dataset size, and training duration.
 - Your LLM keeps ignoring your instructions. How do you make it follow structured output formats?
+  - Answer: Use a strict schema, clear examples, and constrained decoding when available. Put formatting rules in the system or developer prompt, remove conflicting instructions, and ask for only the target format with no extra prose. In production, validate outputs with a parser, retry with error feedback, or use JSON/schema mode or function calling if the model provider supports it.
 - Your LLM-powered tool hits the context window limit on long documents. How do you handle it?
+  - Answer: Do not send the whole document blindly. Chunk the document, retrieve only relevant sections, summarize or compress older context, and use map-reduce or hierarchical processing for full-document tasks. For workflows that need exact references, keep source chunks in external storage and pass citations or selected excerpts into the model.
 - Your LLM does not admit when it does not know the answer. How do you make it say "I don't know"?
+  - Answer: Ground the model in retrieved or provided evidence and explicitly require abstention when evidence is missing. Use prompts that separate answerable from unanswerable cases, add examples of abstention, set confidence thresholds, and evaluate with unanswerable test cases. In RAG systems, check retrieval quality and require citations before allowing a final answer.
 - Your LLM generates responses that are too verbose. How do you control response length?
+  - Answer: Set explicit length constraints in the prompt, such as bullet count, sentence count, or word budget. Use API controls like max output tokens, stop sequences, and lower verbosity instructions. For stricter behavior, add examples of the desired style, post-process long answers, or run a compression step before returning the final response.
 - Your LLM memorized proprietary training data and leaks it in responses. How do you prevent this?
+  - Answer: Reduce exposure during training by deduplicating, filtering, redacting secrets, and excluding sensitive data. Use privacy reviews, access controls, data retention limits, and output filters for known secrets. For fine-tuning, train only on approved data and test with extraction attacks. If leakage is discovered, remove the data, retrain or patch the model if possible, and add monitoring.
 - Your LLM coding assistant generates outdated code using deprecated libraries. How do you fix it?
+  - Answer: Ground the assistant with current documentation, package versions, and project-specific examples using retrieval or tool access. Add prompts that require checking installed versions and repository conventions before answering. In production, combine generation with linters, type checks, tests, dependency scanning, and feedback loops so deprecated APIs are caught automatically.
 - Your tokenizer splits important domain terms into meaningless subword pieces. How do you fix it?
+  - Answer: Add domain terms to the tokenizer vocabulary if you control the model and can resize or continue training embeddings. Otherwise, use normalization, aliases, glossaries, or retrieval context that explains the terms. For high-impact domains, train or adapt a tokenizer on domain text and continue pretraining or fine-tuning so the model learns useful representations for those tokens.
 - Your Transformer's KV cache grows too large during long sequence generation. How do you manage memory?
-  - Answer: [Paged Attention in LLMs](https://outcomeschool.com/blog/paged-attention-in-llms)
+  - Answer: Use techniques such as paged attention, KV-cache quantization, sliding-window attention, grouped-query or multi-query attention, cache eviction, and request batching policies. You can also shorten prompts, summarize older conversation state, cap generation length, or move long-term memory into retrieval instead of keeping every token in the active cache.
 - Your Transformer runs out of memory on long documents due to quadratic self-attention. How do you scale it?
-  - Answer: [How does Sliding Window Attention work?](https://outcomeschool.com/blog/how-does-sliding-window-attention-work) and [Decoding Flash Attention in LLMs](https://outcomeschool.com/blog/decoding-flash-attention)
+  - Answer: Use memory-efficient attention implementations such as Flash Attention, sparse or sliding-window attention, chunking, retrieval, or hierarchical summarization. For document workflows, process sections independently and combine intermediate results. For model architecture changes, use long-context methods that avoid full dense attention over every token pair.
 - Your distilled student model fails on the complex reasoning that the teacher model handled. How do you close the gap?
+  - Answer: Improve the distillation data with harder examples, teacher rationales, multi-step solutions, and edge cases where the student fails. Use curriculum training, preference tuning, or reinforcement learning on reasoning tasks. You may also need a larger student, more inference-time compute, tool use, or a routing setup that sends hard cases to the teacher model.
 - After RLHF alignment, your LLM became safer but lost capability on hard tasks. How do you manage the alignment tax?
+  - Answer: Measure capability regressions with targeted evals, then rebalance the training mix with high-quality task data, harmlessness data, and refusal examples. Use preference data that rewards safe completion instead of over-refusal. Techniques such as supervised fine-tuning refreshes, DPO/RLHF tuning adjustments, model merging, and task-specific routing can recover capability while preserving safety.
 - Your RLHF-trained LLM is gaming the reward model instead of being genuinely helpful. How do you fix reward hacking?
-  - Answer: [Reinforcement Learning from Human Feedback (RLHF)](https://outcomeschool.com/blog/reinforcement-learning-from-human-feedback-rlhf)
+  - Answer: Improve the reward model with adversarial examples, diverse human preferences, and checks for shallow behaviors that receive high scores. Use multiple reward signals, constraint-based evaluation, held-out human review, and online monitoring. Penalize exploit patterns, refresh the reward model regularly, and validate final models on real task success rather than reward score alone.
 - Your chatbot loses context after 10 turns in a conversation. How do you maintain a long conversation context?
-  - Answer: [AI Agent Memory](https://outcomeschool.com/blog/ai-agent-memory)
+  - Answer: Maintain conversation state outside the model. Keep a rolling summary, store important user facts and decisions as memory, retrieve relevant past turns, and include only the most useful context in each prompt. Also separate durable user preferences from temporary task context so the model does not confuse old and current goals.
 - Your chatbot fails when users switch topics mid-conversation. How do you handle topic switches?
+  - Answer: Detect topic changes with intent classification, embeddings, or conversation-state rules. Start a new task state when the topic changes, while preserving durable preferences and relevant history. The assistant should acknowledge the new topic, avoid carrying over stale assumptions, and ask a clarifying question only when the new request lacks required context.
 - Your QA system always generates an answer even when no answer exists in the context. How do you detect unanswerable questions?
+  - Answer: Add an abstention path. Check whether retrieval returned sufficiently relevant evidence, require the model to cite supporting spans, and classify the question as answerable or unanswerable before generation. Use confidence thresholds, entailment checks, and evaluation sets with negative examples so the system learns to say that the answer is not present in the context.
 - Your summarization system hallucinated facts not in the original article. How do you fix it?
+  - Answer: Make the summarizer evidence-grounded. Instruct it to summarize only provided text, use extractive intermediate notes, preserve citations to source spans, and run a factual consistency check before returning the final summary. For long documents, summarize chunks carefully and combine them with a second pass that does not introduce new claims.
 - Your text generation repeats phrases in long outputs. How do you fix repetition?
+  - Answer: Tune decoding parameters and add repetition controls such as frequency penalties, presence penalties, no-repeat n-gram constraints, or lower temperature. Also check whether the prompt encourages looping, whether max token limits are too high, and whether the model needs clearer stopping criteria. For severe cases, use better fine-tuning data or post-generation repetition detection.
 - Transformers work on text, so can they also understand images?
-  - Answer: [Decoding Vision Transformer (ViT)](https://outcomeschool.com/blog/decoding-vision-transformer-vit)
+  - Answer: Yes. Images can be split into patches or encoded into visual tokens, then processed by Transformer layers much like text tokens. Vision Transformers use image patches directly, while multimodal LLMs often use a vision encoder plus a projection layer to connect image representations to a language model. This lets the model answer questions, caption images, and reason over visual inputs.
 - Small Language Models (SLMs)
-  - Answer: [Small Language Models (SLMs)](https://outcomeschool.com/blog/small-language-models-slms)
+  - Answer: Small Language Models are compact language models designed for lower latency, lower cost, and easier deployment than large frontier models. They are useful for focused tasks, on-device inference, private deployments, classification, extraction, routing, and simple chat workflows. Their main tradeoff is reduced world knowledge and reasoning capacity compared with larger models.
 - Large Reasoning Models (LRMs)
-  - Answer: [Large Reasoning Models (LRMs)](https://outcomeschool.com/blog/large-reasoning-models)
+  - Answer: Large Reasoning Models are LLMs optimized for difficult reasoning tasks such as math, coding, planning, and multi-step problem solving. They often use reasoning-focused training data, preference optimization, tool use, or inference-time computation to improve deliberate problem solving. They are strongest when accuracy matters more than minimal latency.
 - Jev and System One Models
-  - Answer: [Jev and System One Models Explained](https://outcomeschool.com/blog/jev-and-system-one-models-explained)
+  - Answer: System One models are optimized for fast, intuitive responses, while Jev-style or reasoning-oriented models emphasize slower, more deliberate problem solving. In practice, fast models are good for simple requests, classification, and high-throughput use cases, while reasoning models are better for complex tasks that need planning, verification, or multi-step logic.
 - What are Autoregressive Models?
-  - Answer: [Autoregressive Models](https://outcomeschool.com/blog/autoregressive-models)
+  - Answer: Autoregressive models generate output one step at a time, where each new token is conditioned on previous tokens. In language modeling, they learn the probability of a sequence as a product of next-token probabilities. Decoder-only LLMs are autoregressive, which makes them natural for text generation, chat, code completion, and streaming responses.
 - Explain the difference between autoregressive and masked language modeling.
+  - Answer: Autoregressive language modeling predicts the next token using only previous context, which is ideal for generation. Masked language modeling hides some tokens in the input and trains the model to reconstruct them using both left and right context, which is strong for understanding tasks. GPT-style models are autoregressive, while BERT-style models use masked language modeling.
 - Proximal Policy Optimization (PPO)
-  - Answer: [Proximal Policy Optimization (PPO)](https://outcomeschool.com/blog/proximal-policy-optimization-ppo)
+  - Answer: PPO is a reinforcement learning algorithm used in some RLHF pipelines to optimize a policy model against a reward model while limiting how far the policy can move from its previous behavior. The clipping or trust-region-like constraint improves training stability. In LLM alignment, PPO can improve helpfulness or preference alignment, but it is complex and sensitive to reward model quality.
 - Direct Preference Optimization (DPO)
-  - Answer: [Direct Preference Optimization (DPO)](https://outcomeschool.com/blog/direct-preference-optimization-dpo)
+  - Answer: DPO is a preference optimization method that trains a model directly from pairs of preferred and rejected responses. Instead of training a separate reward model and running reinforcement learning, DPO optimizes a classification-like objective that increases the likelihood of preferred responses relative to rejected ones. It is simpler and more stable than many RLHF setups.
 - Group Relative Policy Optimization (GRPO)
-  - Answer: [Group Relative Policy Optimization (GRPO)](https://outcomeschool.com/blog/group-relative-policy-optimization-grpo)
+  - Answer: GRPO is a reinforcement learning method that compares multiple sampled responses for the same prompt and optimizes the policy using relative rewards within that group. It can reduce the need for a separate value model and is useful for reasoning-oriented training where several candidate solutions can be scored. The key idea is learning from relative quality among grouped outputs.
 - Recursive Language Models (RLMs)
-  - Answer: [Recursive Language Models (RLMs)](https://outcomeschool.com/blog/recursive-language-models)
+  - Answer: Recursive Language Models are models or systems that apply language-model reasoning repeatedly, often feeding intermediate outputs back into later steps. This can support decomposition, self-refinement, planning, verification, or tree-like reasoning. The benefit is more deliberate computation; the risk is compounding errors if intermediate steps are not checked.
 - Continual Learning in LLMs
-  - Answer: [Continual Learning in LLMs](https://outcomeschool.com/blog/continual-learning-in-llms)
+  - Answer: Continual learning is the process of updating a model over time as new data, tasks, or domains appear. For LLMs, the challenge is learning new information without catastrophic forgetting, regressions, or privacy leaks. Common approaches include continued pretraining, fine-tuning with replay data, adapters, retrieval-based memory, and careful evaluation across old and new tasks.
 - What is Recursive Self-Improvement (RSI)?
-  - Answer: [What is Recursive Self-Improvement (RSI)?](https://outcomeschool.com/blog/what-is-recursive-self-improvement-rsi)
+  - Answer: Recursive Self-Improvement is the idea of an AI system improving its own capabilities, then using the improved version to make further improvements. In practical systems, this might involve generating training data, writing code, designing experiments, or improving prompts and tools. It requires strong evaluation, safety controls, and human oversight because errors or misaligned objectives can compound.
 - How do Diffusion Language Models (DLMs) work?
-  - Answer: [How do Diffusion Language Models (DLMs) work?](https://outcomeschool.com/blog/how-do-diffusion-language-models-dlms-work)
+  - Answer: Diffusion Language Models generate text through an iterative denoising process rather than strictly left-to-right next-token prediction. They start from noisy or masked token representations and progressively refine them into coherent text. This can enable parallel generation and flexible editing, but discrete text diffusion is harder than image diffusion because language tokens are categorical and highly structured.
 - How Does LLM Watermarking Work?
-  - Answer: [How Does LLM Watermarking Work?](https://outcomeschool.com/blog/how-does-llm-watermarking-work)
+  - Answer: LLM watermarking embeds a detectable statistical pattern into generated text, usually by slightly biasing token selection toward a secret or known subset of tokens. A detector later checks whether the token pattern is unlikely to occur naturally. Watermarking can help identify AI-generated content, but it may be weakened by paraphrasing, translation, editing, or generation settings.
 - How do RNNs and Transformers differ?
-  - Answer: [How do RNNs and Transformers differ?](https://outcomeschool.com/blog/how-do-rnns-and-transformers-differ)
+  - Answer: RNNs process tokens sequentially, maintaining a hidden state that is updated step by step. Transformers process sequences with attention, allowing tokens to directly attend to other tokens and enabling much more parallel training. RNNs are efficient for streaming and small sequences, but Transformers scale better, capture long-range dependencies more effectively, and dominate modern LLMs.
 
 ### Prompt Engineering
 
